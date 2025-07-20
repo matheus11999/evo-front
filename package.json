@@ -4,14 +4,14 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": "18.x",
+    "node": "20.x",
     "npm": ">=8.0.0"
   },
   "scripts": {
     "dev": "vite",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' vite build",
     "start": "npx serve dist -s -l $PORT",
-    "heroku-prebuild": "npm ci --production=false",
+    "heroku-prebuild": "npm install",
     "lint": "eslint .",
     "preview": "vite preview"
   },
