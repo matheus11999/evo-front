@@ -1,12 +1,90 @@
-# React + Vite
+# WhatsApp Sender - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend da plataforma WhatsApp Sender construído com React + Vite.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🎨 Interface moderna com Tailwind CSS
+- 📱 Design responsivo
+- 🔐 Sistema de autenticação
+- 📊 Dashboard interativo
+- 📧 Gerenciamento de campanhas
+- 👥 Gerenciamento de grupos
+- 📈 Relatórios e logs
+- ⚙️ Configurações de instâncias WhatsApp
 
-## Expanding the ESLint configuration
+## Tecnologias
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React 19
+- Vite 7
+- Tailwind CSS 3
+- React Router DOM
+- Axios
+- Lucide React (ícones)
+
+## Instalação
+
+```bash
+# Instalar dependências
+npm install
+
+# Iniciar em desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Preview da build
+npm run preview
+```
+
+## Configuração
+
+Crie um arquivo `.env` baseado no `.env.production`:
+
+```env
+VITE_API_URL=https://your-domain.com/api
+```
+
+## Deploy
+
+### Heroku/Easypanel
+- Build automático via buildpack Node.js
+- Comando start: `npm start`
+- Porta automática via `$PORT`
+
+### Docker
+```bash
+# Build
+docker build -t whatsapp-sender-frontend .
+
+# Run
+docker run -p 4173:4173 whatsapp-sender-frontend
+```
+
+### Netlify/Vercel
+- Build command: `npm run build`
+- Publish directory: `dist`
+
+## Estrutura
+
+```
+src/
+├── components/      # Componentes reutilizáveis
+├── pages/          # Páginas principais
+├── contexts/       # Contextos React
+├── lib/           # Utilitários e configurações
+└── assets/        # Recursos estáticos
+```
+
+## Scripts
+
+- `npm run dev` - Desenvolvimento
+- `npm run build` - Build de produção
+- `npm run start` - Servir build (produção)
+- `npm run lint` - Linting ESLint
+- `npm run preview` - Preview local da build
+
+## Licença
+
+MIT
