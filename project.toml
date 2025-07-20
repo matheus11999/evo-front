@@ -1,6 +1,0 @@
-[[build.buildpacks]]
-uri = "heroku/nodejs"
-
-[build.env]
-NODE_ENV = "production"
-NPM_CONFIG_PRODUCTION = "false"
