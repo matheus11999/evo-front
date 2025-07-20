@@ -27,6 +27,8 @@ const CampaignForm = ({
   })
   const [mediaFile, setMediaFile] = useState(null)
   const [mediaPreview, setMediaPreview] = useState(null)
+  const [mediaUrl, setMediaUrl] = useState('')
+  const [uploadType, setUploadType] = useState('file') // 'file' ou 'url'
   const [selectedGroupNames, setSelectedGroupNames] = useState([])
 
   useEffect(() => {
@@ -62,6 +64,7 @@ const CampaignForm = ({
     const file = e.target.files[0]
     if (file) {
       setMediaFile(file)
+      setMediaUrl('') // Limpar URL se arquivo for selecionado
       
       if (file.type.startsWith('image/')) {
         const reader = new FileReader()
@@ -75,9 +78,21 @@ const CampaignForm = ({
     }
   }
 
+  const handleUrlChange = (e) => {
+    const url = e.target.value
+    setMediaUrl(url)
+    if (url) {
+      setMediaFile(null) // Limpar arquivo se URL for inserida
+      setMediaPreview(url)
+    } else {
+      setMediaPreview(null)
+    }
+  }
+
   const removeMedia = () => {
     setMediaFile(null)
     setMediaPreview(null)
+    setMediaUrl('')
   }
 
   const handleSubmit = async (e) => {
@@ -93,8 +108,8 @@ const CampaignForm = ({
       return
     }
     
-    if ((formData.type === 'IMAGE' || formData.type === 'DOCUMENT') && !mediaFile && !mediaPreview) {
-      alert(`Selecione um ${formData.type === 'IMAGE' ? 'arquivo de imagem' : 'documento'} para continuar`)
+    if ((formData.type === 'IMAGE' || formData.type === 'DOCUMENT') && !mediaFile && !mediaUrl) {
+      alert(`Selecione um ${formData.type === 'IMAGE' ? 'arquivo de imagem' : 'documento'} ou insira uma URL para continuar`)
       return
     }
     
@@ -110,6 +125,8 @@ const CampaignForm = ({
 
     if (mediaFile) {
       formDataToSend.append('media', mediaFile)
+    } else if (mediaUrl) {
+      formDataToSend.append('mediaUrl', mediaUrl)
     }
 
     await onSubmit(formDataToSend)
@@ -127,6 +144,7 @@ const CampaignForm = ({
     })
     setMediaFile(null)
     setMediaPreview(null)
+    setMediaUrl('')
   }
 
   const borderColor = isEditing ? 'border-orange-200' : 'border-blue-200'
@@ -233,6 +251,34 @@ const CampaignForm = ({
                       {formData.type === 'IMAGE' ? '🖼️ Imagem' : '📄 Documento'} *
                     </label>
                     
+                    {/* Tabs para escolher entre arquivo e URL */}
+                    <div className="mb-3">
+                      <div className="flex border-b border-gray-200">
+                        <button
+                          type="button"
+                          onClick={() => setUploadType('file')}
+                          className={`px-4 py-2 text-sm font-medium ${
+                            uploadType === 'file'
+                              ? 'text-blue-600 border-b-2 border-blue-600'
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                        >
+                          📁 Arquivo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setUploadType('url')}
+                          className={`px-4 py-2 text-sm font-medium ${
+                            uploadType === 'url'
+                              ? 'text-blue-600 border-b-2 border-blue-600'
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                        >
+                          🔗 URL
+                        </button>
+                      </div>
+                    </div>
+                    
                     {mediaPreview && (
                       <div className="mb-3">
                         <div className="relative inline-block">
@@ -246,7 +292,7 @@ const CampaignForm = ({
                             <div className="flex items-center space-x-2 p-3 bg-gray-100 rounded-lg border border-gray-300">
                               <FileDown className="h-8 w-8 text-gray-600 dark:text-gray-400" />
                               <span className="text-sm text-gray-700 dark:text-gray-300">
-                                {mediaFile ? mediaFile.name : 'Arquivo selecionado'}
+                                {mediaFile ? mediaFile.name : 'Arquivo/URL selecionado'}
                               </span>
                             </div>
                           )}
@@ -261,32 +307,59 @@ const CampaignForm = ({
                       </div>
                     )}
                     
-                    <div className="flex items-center space-x-3">
-                      <label className="flex-1 cursor-pointer">
-                        <div className="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
-                          <Upload className="h-5 w-5 text-gray-400 mr-2" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Escolher {formData.type === 'IMAGE' ? 'imagem' : 'documento'}
+                    {/* Upload de arquivo */}
+                    {uploadType === 'file' && (
+                      <div className="flex items-center space-x-3">
+                        <label className="flex-1 cursor-pointer">
+                          <div className="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
+                            <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              Escolher {formData.type === 'IMAGE' ? 'imagem' : 'documento'}
+                            </span>
+                          </div>
+                          <input
+                            type="file"
+                            onChange={handleMediaChange}
+                            accept={formData.type === 'IMAGE' ? 'image/*' : '.pdf,.doc,.docx,.txt'}
+                            className="hidden"
+                          />
+                        </label>
+                        {mediaFile && (
+                          <span className="text-sm text-green-600 font-medium">
+                            ✓ Arquivo selecionado
                           </span>
-                        </div>
-                        <input
-                          type="file"
-                          onChange={handleMediaChange}
-                          accept={formData.type === 'IMAGE' ? 'image/*' : '.pdf,.doc,.docx,.txt'}
-                          className="hidden"
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Input de URL */}
+                    {uploadType === 'url' && (
+                      <div className="space-y-2">
+                        <Input
+                          type="url"
+                          placeholder={`URL da ${formData.type === 'IMAGE' ? 'imagem' : 'documento'} (ex: https://exemplo.com/imagem.jpg)`}
+                          value={mediaUrl}
+                          onChange={handleUrlChange}
+                          className={focusColor}
                         />
-                      </label>
-                      {mediaFile && (
-                        <span className="text-sm text-green-600 font-medium">
-                          ✓ Arquivo selecionado
-                        </span>
-                      )}
-                    </div>
+                        {mediaUrl && (
+                          <span className="text-sm text-green-600 font-medium">
+                            ✓ URL configurada
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {formData.type === 'IMAGE' 
-                        ? 'Formatos: JPG, PNG, GIF (máx. 10MB)'
-                        : 'Formatos: PDF, DOC, DOCX, TXT (máx. 10MB)'
-                      }
+                      {uploadType === 'file' ? (
+                        formData.type === 'IMAGE' 
+                          ? 'Formatos: JPG, PNG, GIF (máx. 10MB)'
+                          : 'Formatos: PDF, DOC, DOCX, TXT (máx. 10MB)'
+                      ) : (
+                        formData.type === 'IMAGE'
+                          ? 'Insira uma URL direta para a imagem (JPG, PNG, GIF)'
+                          : 'Insira uma URL direta para o documento (PDF, DOC, etc.)'
+                      )}
                     </p>
                   </div>
                 )}
