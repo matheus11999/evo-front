@@ -21,11 +21,13 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: true
+    host: '0.0.0.0',
+    strictPort: false
   },
   preview: {
     port: process.env.PORT || 4173,
     host: '0.0.0.0',
-    allowedHosts: 'all'
+    strictPort: false,
+    cors: true
   }
 })
